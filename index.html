@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Stalker Directory</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --site-primary: #7c1f32;
+  --site-on-primary: #fff8f3;
+  --site-secondary: #e8d7cb;
+  --site-on-secondary: #2a2020;
+  --site-background: #f4eee8;
+  --site-on-background: #211d1b;
+  --site-font-body: 'Courier New', monospace;
+  --site-font-heading: Georgia, 'Times New Roman', serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+  --surface: light-dark(#fffaf6, #201c1b);
+  --muted: light-dark(#766c65, #b7aaa3);
+  --line: light-dark(#d8c8bd, #51423e);
+  --paper: light-dark(#efe4db, #302522);
+  --accent: light-dark(#9d2f43, #f19aa7);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--site-background); color: var(--site-on-background); font-family: var(--site-font-body); font-size: 13px; line-height: 1.55; }
+#app { min-height: 100vh; width: 100%; border-radius: 0; background-color: var(--site-background); color: var(--site-on-background); position: relative; overflow: hidden; }
+.topbar { background: var(--site-primary); color: var(--site-on-primary); padding: calc(12px * var(--site-spacing-scale)) clamp(16px, 4vw, 52px); display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 4px double var(--site-on-primary); }
+.brand { font-weight: bold; letter-spacing: .13em; text-transform: uppercase; font-size: 12px; }
+.top-meta { text-align: right; font-size: 10px; opacity: .88; }
+.hero { padding: clamp(35px, 7vw, 78px) clamp(18px, 7vw, 88px) 34px; position: relative; border-bottom: 1px solid var(--line); }
+.stamp { display: inline-block; color: var(--accent); border: 1px solid currentColor; padding: 4px 9px; font-size: 10px; letter-spacing: .12em; transform: rotate(-2deg); margin-bottom: 22px; text-transform: uppercase; }
+h1,h2,h3 { font-family: var(--site-font-heading); font-weight: normal; }
+h1 { font-size: clamp(43px, 8.5vw, 88px); line-height: .91; letter-spacing: -.055em; max-width: 800px; margin: 0; }
+h1 em { color: var(--accent); font-weight: normal; }
+.subtitle { font-size: 12px; max-width: 610px; margin: 24px 0 0; color: var(--muted); }
+.hero-index { position: absolute; right: clamp(20px, 7vw, 88px); bottom: 38px; width: 94px; height: 94px; border: 1px solid var(--line); border-radius: 50%; display: grid; place-items: center; text-align: center; font-size: 9px; line-height: 1.4; transform: rotate(10deg); color: var(--muted); }
+.notice { margin: 22px clamp(18px, 7vw, 88px); padding: 12px 15px; border-left: 3px solid var(--site-primary); background: var(--paper); font-size: 11px; }
+.notice strong { color: var(--accent); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 0 clamp(18px, 7vw, 88px) 25px; }
+.search-wrap { flex: 1 1 240px; position: relative; }
+input, select, button { font: inherit; border-radius: 0; }
+input, select { width: 100%; padding: 12px 13px; color: var(--site-on-background); background: var(--surface); border: 1px solid var(--line); outline-offset: 3px; }
+button { cursor: pointer; padding: 11px 14px; border: 1px solid var(--site-primary); background: var(--site-primary); color: var(--site-on-primary); transition: transform .15s, opacity .15s; }
+button:hover { transform: translateY(-1px); opacity: .9; }
+button.secondary { background: transparent; color: var(--site-on-background); border-color: var(--line); }
+.layout { display: grid; grid-template-columns: minmax(160px, 220px) 1fr; gap: 28px; padding: 0 clamp(18px, 7vw, 88px) 70px; }
+.sidebar { border-top: 1px solid var(--line); padding-top: 13px; }
+.side-title, .section-label { font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); margin: 0 0 13px; }
+.category { display: block; width: 100%; text-align: left; background: transparent; color: var(--site-on-background); border: 0; border-bottom: 1px solid var(--line); padding: 11px 5px; }
+.category span { color: var(--muted); float: right; }
+.category.active { color: var(--accent); padding-left: 12px; border-left: 2px solid var(--accent); }
+.sidebar-note { font-size: 10px; color: var(--muted); border: 1px dashed var(--line); padding: 12px; margin-top: 25px; }
+.content-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--line); padding: 0 0 13px; margin-bottom: 17px; }
+.content-head h2 { margin: 0; font-size: 25px; }
+.count { color: var(--muted); font-size: 10px; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.card { background: var(--surface); border: 1px solid var(--line); padding: 17px; min-height: 195px; display: flex; flex-direction: column; position: relative; }
+.card:hover { border-color: var(--accent); }
+.card-top { display: flex; align-items: start; justify-content: space-between; gap: 8px; }
+.card-id { font-size: 10px; color: var(--muted); }
+.tag { border: 1px solid var(--line); color: var(--muted); padding: 2px 6px; font-size: 9px; text-transform: uppercase; }
+.card h3 { font-size: 24px; line-height: 1.05; margin: 20px 0 8px; }
+.card p { color: var(--muted); margin: 0 0 18px; font-size: 11px; }
+.card-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px dashed var(--line); padding-top: 12px; }
+.card-foot button { font-size: 10px; padding: 7px 9px; }
+.rating { color: var(--accent); font-size: 10px; }
+.empty { grid-column: 1/-1; padding: 30px; border: 1px dashed var(--line); color: var(--muted); text-align: center; }
+.footer { background: var(--site-secondary); color: var(--site-on-secondary); padding: 25px clamp(18px, 7vw, 88px); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 18px; font-size: 10px; }
+.footer strong { font-family: var(--site-font-heading); font-size: 19px; font-weight: normal; }
+.modal-backdrop { display: none; position: fixed; inset: 0; z-index: 5; background: rgba(15, 9, 9, .62); padding: 18px; align-items: center; justify-content: center; }
+.modal-backdrop.open { display: flex; }
+.modal { background: var(--surface); color: var(--site-on-background); border: 1px solid var(--accent); width: min(530px, 100%); padding: 24px; box-shadow: 10px 10px 0 rgba(0,0,0,.18); max-height: 85vh; overflow: auto; }
+.modal-top { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
+.modal h2 { font-size: 34px; line-height: 1; margin: 10px 0 15px; }
+.modal p { color: var(--muted); }
+.modal .x { padding: 5px 9px; }
+.modal ul { padding-left: 19px; }
+.modal li { margin: 7px 0; }
+.disclaimer { font-size: 10px; border-top: 1px solid var(--line); margin-top: 20px; padding-top: 13px; color: var(--muted); }
+.rabbit-hole { margin: 0 clamp(18px, 7vw, 88px) 30px; border: 1px solid var(--line); background: var(--paper); padding: 18px; }
+.rabbit-hole h2 { margin: 0 0 8px; font-size: 27px; }
+.rabbit-hole p { color: var(--muted); font-size: 11px; }
+.toy-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.toy-row button { font-size: 10px; }
+.terminal { background: #171916; color: #b8d6a1; padding: 15px; margin-top: 12px; min-height: 76px; white-space: pre-wrap; font-size: 11px; overflow-wrap: anywhere; }
+.hidden-note { display: none; margin-top: 12px; border-left: 2px solid var(--accent); padding: 10px 13px; background: var(--surface); }
+.hidden-note.show { display: block; }
+.status-line { font-size: 10px; color: var(--muted); margin-top: 9px; }
+.footer button { background: transparent; color: inherit; border-color: currentColor; font-size: 10px; }
+@media (max-width: 680px) { .hero-index { display: none; } .layout { grid-template-columns: 1fr; gap: 22px; } .sidebar { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 10px; } .side-title, .sidebar-note { grid-column: 1/-1; } .cards { grid-template-columns: 1fr; } .content-head h2 { font-size: 22px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="app" data-sites-preview-theme="custom">
+  <header class="topbar"><div class="brand">SD / The Stalker Directory</div><div class="top-meta">UNOFFICIAL RESEARCH INDEX<br>EST. PROBABLY LAST TUESDAY</div></header>
+  <section class="hero">
+    <div class="stamp">For fictional professionals only</div>
+    <h1>So you've<br>developed an<br><em>unhealthy interest.</em></h1>
+    <p class="subtitle">A deeply unnecessary directory of questionable fictional resources, melodramatic self-help, suspiciously specific reading lists, and tools for characters who should simply go to therapy.</p>
+    <div class="hero-index">INDEX<br>NO. 0001<br>HANDLE<br>WITH DRAMA</div>
+  </section>
+  <div class="notice"><strong>IMPORTANT DISCLAIMER:</strong> This directory is satire for fictional storytelling and media analysis. No real-person tracking, privacy invasion, or unwanted contact is endorsed. If the subject is a real person, close this tab and develop a hobby.</div>
+  <div class="toolbar">
+    <div class="search-wrap"><input id="search" type="search" placeholder="Search the directory… (e.g. denial, alibi, therapy)" aria-label="Search the directory"></div>
+    <select id="sort" aria-label="Sort entries"><option value="default">Sort: filed order</option><option value="az">Sort: A–Z</option><option value="severity">Sort: questionable rating</option></select>
+    <button id="randomBtn" type="button">Surprise me ↗</button>
+  </div>
+  <main class="layout">
+    <aside class="sidebar">
+      <p class="side-title">Browse departments</p>
+      <button class="category active" data-category="All">All departments <span>09</span></button>
+      <button class="category" data-category="Psychology">Amateur psychology <span>02</span></button>
+      <button class="category" data-category="Fictional tools">Fictional tools <span>02</span></button>
+      <button class="category" data-category="Cover stories">Cover stories & excuses <span>02</span></button>
+      <button class="category" data-category="Intervention">Intervention desk <span>03</span></button>
+      <div class="sidebar-note">NOTICE FROM ADMIN: The phrase “I did it for love” is not a legal defense, a diagnosis, or a personality.</div>
+    </aside>
+    <section class="results">
+      <div class="content-head"><h2 id="sectionTitle">The complete index</h2><span class="count" id="resultCount">09 RECORDS</span></div>
+      <div class="cards" id="cards" aria-live="polite"></div>
+    </section>
+  </main>
+  <section class="rabbit-hole" aria-labelledby="rabbitTitle">
+    <div class="section-label">Supplementary systems / not officially maintained</div>
+    <h2 id="rabbitTitle">You were not supposed to click everything.</h2>
+    <p>The archive contains several interactive anomalies. They are fictional puzzles and satirical props, not tools for identifying or monitoring real people.</p>
+    <div class="toy-row"><button type="button" id="fortuneBtn">Consult the ethics oracle</button><button type="button" class="secondary" id="terminalBtn">Open maintenance terminal</button><button type="button" class="secondary" id="memoBtn">Read a memo marked WRONG</button><button type="button" class="secondary" id="resetBtn">Reset local clues</button></div>
+    <div class="terminal" id="terminal" hidden></div>
+    <div class="hidden-note" id="oracle" aria-live="polite"></div>
+    <div class="hidden-note" id="memo">INTERNAL MEMO 04-B: If a fictional character says “I know what's best for them,” please direct them to the exit, the ethics committee, and at least one qualified therapist. This memo has been marked WRONG by three separate departments.</div>
+    <div class="hidden-note" id="clue">FRAGMENT RECOVERED: “The index is not the archive. The archive is not the record. The record is not the truth.” Keep this phrase for the fictional puzzle trail.</div>
+    <div class="status-line" id="clueStatus">CLUE STATUS: 0 / 3 fragments recovered</div>
+  </section>
+  <footer class="footer"><div><strong>The Stalker Directory</strong><br>A parody resource hub for fictional catastrophes.</div><div>CONFIDENTIAL? ABSOLUTELY NOT.<br>ETHICAL? LET'S NOT GET AHEAD OF OURSELVES.</div><div>© THE DEPARTMENT OF BAD DECISIONS<br><button type="button" id="complaintBtn">File a complaint</button></div></footer>
+</div>
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal"><div class="modal-top"><div><div class="section-label" id="modalCategory">FILE DETAILS</div><h2 id="modalTitle">Entry title</h2></div><button class="secondary x" id="closeModal" aria-label="Close details">✕</button></div><div id="modalBody"></div><div class="disclaimer">This entry is a fictional satire prop. It is not advice, a real service, or an endorsement of stalking or harassment.</div></div>
+</div>
+<script>
+const entries = [
+ {id:'SD-001',title:'The Projection Department',category:'Psychology',tag:'self-deception',rating:4,desc:'For when a character mistakes their own narrative for objective reality.',detail:'A catalog of classic rationalizations: “I understand them better than anyone,” “This is for their own good,” and “I had no choice.” Includes a worksheet for separating facts from the story your protagonist tells themselves.',items:['Narrator reliability checklist','A list of red flags the character calls “green flags”','A completely imaginary certificate in Advanced Delusion']},
+ {id:'SD-002',title:'Romance or Red Flag?',category:'Psychology',tag:'delusion audit',rating:5,desc:'A quiz whose results are almost certainly “please seek help.”',detail:'A fictional self-assessment for characters who think possessiveness is a love language. The quiz is rigged because the character is the problem.',items:['Do they respect boundaries? (A plot twist!)','Can they accept “no” without a monologue?','Do they have interests unrelated to one person?']},
+ {id:'SD-003',title:'The Suspiciously Specific Search Engine',category:'Fictional tools',tag:'fake website',rating:3,desc:'Returns only public-interest articles, literary tropes, and increasingly concerned advice columns.',detail:'A prop search portal for your fictional universe. Every query leads to a scholarly paper about obsession, a film essay, or a therapist’s FAQ. Absolutely no real-person lookup functionality.',items:['Searches fictional character names only','Suggests media-analysis essays','After three searches, recommends logging off']},
+ {id:'SD-004',title:'Alibi Generator™',category:'Cover stories',tag:'fictional nonsense',rating:5,desc:'Produces excuses so theatrical that even the detective feels embarrassed.',detail:'A randomized generator for over-the-top fictional excuses. These are intentionally absurd and designed for comedy or dialogue, not to help anyone evade accountability.',items:['“I was at the library researching emotional availability.”','“It was performance art. The performance was bad.”','“My lawyer advised me to stop improvising.”']},
+ {id:'SD-005',title:'The Definitely Normal Gift Shop',category:'Cover stories',tag:'merchandising',rating:4,desc:'Candles, notebooks, and apology bouquets with deeply alarming product descriptions.',detail:'A fake storefront for the kind of character who believes a beautifully wrapped gift can repair a catastrophic decision. Every product listing ends with an increasingly stern disclaimer.',items:['“I Am Listening” notebook — unused pages included','Boundary Respect™ scented candle — burns for 3 hours','Gift card redeemable for one sincere apology']},
+ {id:'SD-006',title:'Digital Detective Academy',category:'Fictional tools',tag:'fictional course',rating:3,desc:'Teaches fictional detectives to notice plot clues, not invade anyone’s privacy.',detail:'A pretend online course for writers building mystery plots. Focuses on narrative structure, evidence ethics, character contradictions, and the difference between a clue and a creepy assumption.',items:['Module 1: Build a timeline from fictional scenes','Module 2: Question unreliable narrators','Module 3: Evidence is not the same thing as vibes']},
+ {id:'SD-007',title:'The Consequences Calculator',category:'Intervention',tag:'risk assessment',rating:5,desc:'Enter one bad decision; receive a comprehensive list of reasons not to.',detail:'A satirical decision tool. It converts a protagonist’s grand romantic gesture into a list of consequences, affected people, and possible legal-drama subplots.',items:['Potential fallout: substantial','Chance the monologue helps: negligible','Recommended action: do not do the thing']},
+ {id:'SD-008',title:'Anonymous Group Therapy (Fictional)',category:'Intervention',tag:'support group',rating:2,desc:'A meeting for characters who need to stop narrating and start reflecting.',detail:'Welcome to the weekly fictional support group. Members are encouraged to describe their choices without calling them destiny, chemistry, or “a complicated situation.”',items:['No romanticizing criminal behavior','One honest sentence per character','Snacks provided; accountability mandatory']},
+ {id:'SD-009',title:'Joe Goldberg Case File',category:'Intervention',tag:'media analysis',rating:5,desc:'A case-study folder on charm, narration, obsession, and consequences.',detail:'A fan-made media-analysis entry inspired by the fictional character Joe Goldberg from YOU. Examine how narration makes his actions sound reasonable while the story shows the harm underneath.',items:['Narrator vs. observable events comparison','Recurring rationalizations and contradictions','Discussion prompts about audience complicity']}
+];
+let activeCategory = 'All';
+const cards = document.getElementById('cards');
+const search = document.getElementById('search');
+const sort = document.getElementById('sort');
+const recovered = new Set();
+const oracleLines = ['The oracle has reviewed your choices. It recommends a hobby, a glass of water, and leaving the fictional person alone.','Your result: narratively compelling, ethically catastrophic. Please do not confuse those categories.','The committee finds your vibes inadmissible as evidence.','A prophecy: the consequences were, in fact, foreseeable.'];
+function render(){
+ const q=search.value.trim().toLowerCase();
+ let list=entries.filter(e=>(activeCategory==='All'||e.category===activeCategory)&&[e.title,e.category,e.tag,e.desc,e.detail].join(' ').toLowerCase().includes(q));
+ if(sort.value==='az') list.sort((a,b)=>a.title.localeCompare(b.title));
+ if(sort.value==='severity') list.sort((a,b)=>b.rating-a.rating);
+ document.getElementById('sectionTitle').textContent=activeCategory==='All'?'The complete index':activeCategory;
+ document.getElementById('resultCount').textContent=String(list.length).padStart(2,'0')+' RECORDS';
+ cards.innerHTML='';
+ if(!list.length){cards.innerHTML='<div class="empty">No files found. Either the archive is incomplete or you have finally developed a normal interest.</div>';return;}
+ list.forEach(e=>{const card=document.createElement('article');card.className='card';card.innerHTML=`<div class="card-top"><span class="card-id">${e.id}</span><span class="tag">${e.tag}</span></div><h3>${e.title}</h3><p>${e.desc}</p><div class="card-foot"><span class="rating">QUESTIONABLE: ${'★'.repeat(e.rating)}${'☆'.repeat(5-e.rating)}</span><button type="button" data-open="${e.id}">Open file ↗</button></div>`;cards.appendChild(card);});
+ cards.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openEntry(b.dataset.open)));
+}
+function openEntry(id){const e=entries.find(x=>x.id===id);if(!e)return;document.getElementById('modalCategory').textContent=e.id+' / '+e.category.toUpperCase();document.getElementById('modalTitle').textContent=e.title;const body=document.getElementById('modalBody');body.innerHTML='';const p=document.createElement('p');p.textContent=e.detail;body.appendChild(p);const h=document.createElement('p');h.textContent='INCLUDED IN THIS FILE:';body.appendChild(h);const ul=document.createElement('ul');e.items.forEach(item=>{const li=document.createElement('li');li.textContent=item;ul.appendChild(li)});body.appendChild(ul);document.getElementById('modalBackdrop').classList.add('open');document.getElementById('closeModal').focus();}
+function closeModal(){document.getElementById('modalBackdrop').classList.remove('open')}
+search.addEventListener('input',render);sort.addEventListener('change',render);
+document.querySelectorAll('.category').forEach(b=>b.addEventListener('click',()=>{activeCategory=b.dataset.category;document.querySelectorAll('.category').forEach(x=>x.classList.toggle('active',x===b));render()}));
+document.getElementById('randomBtn').addEventListener('click',()=>{const list=entries.filter(e=>activeCategory==='All'||e.category===activeCategory);openEntry(list[Math.floor(Math.random()*list.length)].id)});
+document.getElementById('closeModal').addEventListener('click',closeModal);
+document.getElementById('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+function recover(id){recovered.add(id);document.getElementById('clueStatus').textContent='CLUE STATUS: '+recovered.size+' / 3 fragments recovered';if(recovered.size===3){document.getElementById('clue').classList.add('show');document.getElementById('clueStatus').textContent='CLUE STATUS: 3 / 3 — ARCHIVE FRAGMENT UNLOCKED';}}
+document.getElementById('fortuneBtn').addEventListener('click',()=>{const el=document.getElementById('oracle');el.textContent=oracleLines[Math.floor(Math.random()*oracleLines.length)];el.classList.add('show');recover('oracle')});
+document.getElementById('terminalBtn').addEventListener('click',()=>{const el=document.getElementById('terminal');el.hidden=!el.hidden;if(!el.hidden){el.textContent=['DIRECTORY OS // MAINTENANCE CHANNEL','> checking permissions… DENIED (for your own good)','> checking ethics module… NOT FOUND','> restoring ethics module…','> warning: fictional puzzle environment only','> fragment 02: “A convincing story is not the same as the truth.”'].join(String.fromCharCode(10));recover('terminal')}});
+document.getElementById('memoBtn').addEventListener('click',()=>{document.getElementById('memo').classList.toggle('show');recover('memo')});
+document.getElementById('resetBtn').addEventListener('click',()=>{recovered.clear();['oracle','memo','clue'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('terminal').hidden=true;document.getElementById('clueStatus').textContent='CLUE STATUS: 0 / 3 fragments recovered'});
+document.getElementById('complaintBtn').addEventListener('click',()=>{document.getElementById('modalCategory').textContent='FORM 00-C / ADMINISTRATIVE VOID';document.getElementById('modalTitle').textContent='Complaint received';const body=document.getElementById('modalBody');body.textContent='Thank you for contacting the Department of Bad Decisions. Your complaint has been assigned to a committee that exists only in this website. Estimated response time: never. Reference number: VERY-REAL-000.';document.getElementById('modalBackdrop').classList.add('open');document.getElementById('closeModal').focus()});
+render();
+</script>
+</body>
+</html>
